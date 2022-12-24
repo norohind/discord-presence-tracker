@@ -64,6 +64,8 @@ class PresenceTracker:
             )
 
     def get_activity_id(self, activity_name: str) -> int:
+        """Get id for given activity, for insert to another table, for example"""
+
         # Try to find first, insert after
         params = (activity_name,)
         query = self.db.execute('select id from activities where name = ?;', params).fetchone()
@@ -78,6 +80,8 @@ class PresenceTracker:
         return query[0]
 
     def saturate_users_cache(self, user_id: int, user_name: str):
+        """Ensure given user is in cache or add a user to cache"""
+
         logger.trace(f'Adding {user_name!r} to cache')
         with self.db:
             self.db.execute(
@@ -86,7 +90,8 @@ class PresenceTracker:
             )
 
     def user_breakdown(self, user_id: int) -> dict[str, int]:
-        """Return dict with activities names as keys and spent time in seconds as values"""
+        """Return dict with activities names as keys and spent time in hours as values"""
+
         res = self.db.execute(
             'select a.name, round(sum(end_time - start_time) / 3600.0, 1) as total '
             'from presence_journal '
@@ -100,7 +105,8 @@ class PresenceTracker:
         return {row[0]: row[1] for row in res}
 
     def top_users(self, last_days: int | None) -> dict[int, tuple[str | None, int]]:
-        """Returns keys - ids, values - tuple(nickname?, seconds spent)"""  # TODO: implement last_days
+        """Returns keys - ids, values - tuple(nickname?, hours spent)"""  # TODO: implement last_daysa
+
         res = self.db.execute(
             """select uc.user_id, uc.nickname, round(sum(end_time - presence_journal.start_time) / 3600.0, 1) as total
             from presence_journal left join users_cache uc on presence_journal.user_id = uc.user_id
