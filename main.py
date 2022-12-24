@@ -98,7 +98,7 @@ class Bot(BotBase):
 async def async_main():
     # logger.disable('discord')
     logger.remove()
-    logger.add(sink=sys.stderr, level='TRACE')
+    logger.add(sink=sys.stderr)  # Use env var LOGURU_LEVEL to set desire level
 
     intents = discord.Intents.default()
     intents.presences = True
