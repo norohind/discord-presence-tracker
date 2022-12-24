@@ -39,8 +39,8 @@ class Frontend(commands.Cog):
         """
 
         _user = interaction.user if user is None else user
+        logger.trace(f'Invoking /my_stats for {_user}')
 
-        logger.trace(f'Starting my_stats for {_user}')
         stats: dict[str, int] = self.bot.activity_tracker.user_breakdown(_user.id)
         if len(stats) == 0:
             await interaction.response.send_message('No records for such user')
@@ -67,6 +67,9 @@ class Frontend(commands.Cog):
         :param last_days_count: Show stats for last number of days, i.e. for last 14 days (all time for default)
         :return:
         """
+
+        logger.trace(f'Invoking /top_users for {interaction.user}')
+
         data = self.bot.activity_tracker.top_users(0)
         embed = build_table_embed(
             ('Username', *(value[0] for value in data.values())),
