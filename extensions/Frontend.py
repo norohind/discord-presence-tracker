@@ -42,6 +42,10 @@ class Frontend(commands.Cog):
 
         logger.trace(f'Starting my_stats for {_user}')
         stats: dict[str, int] = self.bot.activity_tracker.user_breakdown(_user.id)
+        if len(stats) == 0:
+            await interaction.response.send_message('No records for such user')
+            return
+
         embed = build_table_embed(
             ('Games', *stats.keys()),
             ('Hours spent', *stats.values()),
