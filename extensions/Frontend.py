@@ -79,6 +79,26 @@ class Frontend(commands.Cog):
         )
         await interaction.response.send_message(embed=embed)
 
+    @discord.app_commands.command()
+    async def top_games(self, interaction: discord.Interaction):
+        """
+        Mostly played games by all users
+
+        :param interaction:
+        :return:
+        """
+
+        logger.trace(f'Invoking /top_games for {interaction.user}')
+
+        data = self.bot.activity_tracker.top_games()
+        embed = build_table_embed(
+            ('Games', *data.keys()),
+            ('Spent hours', *data.values()),
+            name='Total spent hours per games by all users',
+            description=f'Total spent {sum(data.values())} hours'
+        )
+        await interaction.response.send_message(embed=embed)
+
 
 async def setup(bot: 'Bot'):
     await bot.add_cog(Frontend(bot))

@@ -116,6 +116,17 @@ class PresenceTracker:
 
         return {row[0]: row[1:3] for row in res}
 
+    def top_games(self) -> dict[str, int]:
+        """Returns keys - names, values - spent hours"""
+        res = self.db.execute(
+            """select a.name, round(sum(end_time - presence_journal.start_time) / 3600.0) as total
+            from presence_journal left join activities a on a.id = presence_journal.activity_name_id
+            group by activity_name_id
+            order by total desc
+            limit 50;""").fetchall()
+
+        return {row[0]: row[1] for row in res}
+
     @staticmethod
     def default_end_time(end_time: datetime | None) -> datetime:
         return datetime.now() if end_time is None else end_time
